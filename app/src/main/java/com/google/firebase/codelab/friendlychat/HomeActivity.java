@@ -1,5 +1,6 @@
 package com.google.firebase.codelab.friendlychat;
 
+import android.app.Notification;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -31,6 +34,7 @@ import com.google.firebase.codelab.friendlychat.MiCuenta.MiCuentaFragment;
 import com.google.firebase.codelab.friendlychat.NuevoPedido.NuevoPedidoFragment;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 
 import static com.google.firebase.codelab.friendlychat.MainActivity.ANONYMOUS;
 
@@ -58,10 +62,39 @@ public class HomeActivity extends AppCompatActivity {
                 .build();
         mSignInClient = GoogleSignIn.getClient(this, gso);
 
-        //me subscribo al tema que quiero
-        FirebaseMessaging.getInstance()
-                .subscribeToTopic("santander");
 
+/*        FirebaseMessaging.getInstance().send(new RemoteMessage.Builder("string")
+                .setMessageId("winka-1bb85")
+                .addData("my_message", "Hello World")
+                .addData("my_action","SAY_HELLO")
+                .setTopic("santander")
+                .build());*/
+
+        String topic = "highScores";
+
+// See documentation on defining a message payload.
+  /*      RemoteMessage message = new RemoteMessage.Builder(this)
+                .putData("score", "850")
+                .putData("time", "2:45")
+                .setTopic("Santander")
+                .build();
+*/
+
+/*        FirebaseMessaging.getInstance().send(message);*/
+
+       /* NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, "winka-1bb85");
+
+        notificationBuilder.setAutoCancel(true)
+                .setColor(ContextCompat.getColor(this, R.color.colorAccent))
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(remoteMessage.getNotification().getBody())
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setAutoCancel(true);
+
+
+        mNotificationManager.notify(1000, notificationBuilder.build());*/
 
         bottomNavigation =  (BottomNavigationView) findViewById(R.id.bottom_navigation);
 
@@ -141,5 +174,6 @@ public class HomeActivity extends AppCompatActivity {
         transaction1.add(R.id.mainFragment, fr);
         transaction1.commit();
     }
+
 
 }

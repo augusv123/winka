@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Message;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,9 +41,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,8 +61,8 @@ public class InicioFragment extends Fragment {
     private TextView balanceText;
     private TextView profit;
     private TextView mail;
-    private FloatingActionButton buttonL;
-    private FloatingActionButton buttonRetirarDinero;
+    private ImageButton buttonL;
+    private ImageButton buttonRetirarDinero;
     private int balance;
     private FirebaseAuth mFirebaseAuth  = FirebaseAuth.getInstance();
     private FirebaseUser mFirebaseUser= mFirebaseAuth.getCurrentUser();
@@ -80,7 +90,7 @@ public class InicioFragment extends Fragment {
         amountInput = (EditText) root.findViewById(R.id.amountInput2);
 
         //boton de ingresar dinero
-        buttonL = (FloatingActionButton) root.findViewById(R.id.floating_action_button1);
+        buttonL = (ImageButton) root.findViewById(R.id.floating_action_button1);
         buttonL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,7 +102,7 @@ public class InicioFragment extends Fragment {
 
         //boton de retirar dinero
 
-        buttonRetirarDinero = (FloatingActionButton) root.findViewById(R.id.floating_action_button2);
+        buttonRetirarDinero = (ImageButton) root.findViewById(R.id.floating_action_button2);
         buttonRetirarDinero.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,7 +174,7 @@ public class InicioFragment extends Fragment {
         });
 
         }
-     private void addAccountBalance(final int amount){
+     private void addAccountBalance(final int amount) throws IOException, JSONException {
          mConditionBallance.setValue(balance + amount);
          addMovementIngreso(amount);
      }
@@ -181,10 +191,11 @@ public class InicioFragment extends Fragment {
         }
     }
 
-    private void addMovementIngreso(  int amount){
+    private void addMovementIngreso(  int amount) throws IOException, JSONException {
 
         DatabaseReference newRef = getmConditionMovements.child("ingresos").push();
         newRef.setValue(amount);
+        sendNewPurchaseNotification();
 
     }
     private void addMovementRetiro(  int amount){
@@ -212,7 +223,13 @@ public class InicioFragment extends Fragment {
                         int amount = Integer.parseInt(amountInput.getText().toString());
                         /*          String amount = amountInput.getText().toString();*/
 
-                        addAccountBalance(amount);
+                        try {
+                            addAccountBalance(amount);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 })
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -251,6 +268,37 @@ public class InicioFragment extends Fragment {
 
                 .show();
     }
+    private void sendNewPurchaseNotification() throws IOException, JSONException {
+        String authKey = "AAAA4tXDhsU:APA91bG-tO7aQl4xaoDTF88cz9d-TiQ_26Q9i7OI9pUbn2k5mrKwiTe_BfOkrknMWYwnk2yxDYMEryIaRUdUfuIt1zf5eIZOglXLTBOlquIDX3SRg63jljV34ivG7vL0e7wQxN5HRgjC";   // You FCM AUTH key
+        String FMCurl = "https://fcm.googleapis.com/fcm/send";
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        URL url = new URL(FMCurl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        conn.setUseCaches(false);
+        conn.setDoInput(true);
+        conn.setDoOutput(true);
+
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Authorization","key="+authKey);
+        conn.setRequestProperty("Content-Type","application/json");
+
+
+        JSONObject json = new JSONObject();
+        json.put("to","/topics/santander");
+        JSONObject data = new JSONObject();
+        data.put("message","Ahora todo cambio le toca a ella");
+        data.put("title","titulo");
+
+        json.put("data", data);
+
+        OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+        wr.write(json.toString());
+        wr.flush();
+        conn.getInputStream();
+
+    }
 
 
 
@@ -272,8 +320,9 @@ public class InicioFragment extends Fragment {
                      Movement m = new Movement(key,move);
                      movementsList.add(m);
                  }
-                 MovimientosAdapter adapter = new MovimientosAdapter(movementsList,R.layout.recycler_view_item);
-                 mRecyclerView.setAdapter(adapter);
+                /* MovimientosAdapter adapter = new MovimientosAdapter(movementsList,R.layout.recycler_view_item);
+                 mRecyclerView.setAdapter(adapter);*/
+                mAdapter.notifyDataSetChanged();
 
              }
              @Override
@@ -304,13 +353,13 @@ public class InicioFragment extends Fragment {
         String topic = "highScores";
 
 // See documentation on defining a message payload.
-   /*      Message message = Message.builder()
+      /*   RemoteMessage message = Message.builder(getContext(),"asd")
                  .putData("score", "850")
                  .putData("time", "2:45")
                  .setTopic(topic)
                  .build();*/
 // Send a message to the devices subscribed to the provided topic.
-      /*  String response = FirebaseMessaging.getInstance().send(message);*/
+       /* String response = FirebaseMessaging.getInstance().send(message);*/
 // Response is a message ID string.
      /*   System.out.println("Successfully sent message: " + response);*/
     }
