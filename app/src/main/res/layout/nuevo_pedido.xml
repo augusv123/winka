@@ -1,23 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical">
-
-    <EditText
-        android:id="@+id/inputTarjeta"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Nombre de tarjeta"
-        android:inputType="textPersonName" />
+    android:orientation="vertical" >
 
     <Button
-        android:id="@+id/crearPedidoButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:text="Enviar" />
+        android:id="@+id/backButton"
+        android:layout_width="155dp"
+        android:layout_height="38dp"
+        android:text="Regresar"
+        app:icon="@drawable/back_arrow" />
+
+    <LinearLayout
+        android:id="@+id/midMenu"
+        android:layout_width="match_parent"
+        android:layout_height="359dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="50dp"
+        android:background="@drawable/bordes_all_shape"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/inputURL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Ingrese URL"
+            android:inputType="textUri" />
+
+        <EditText
+            android:id="@+id/inputMonto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Ingrese Monto"
+            android:inputType="textPersonName" />
+
+
+        <EditText
+            android:id="@+id/inputDiscout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Ingrese Descuento"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/inputName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Ingrese Nombre"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/inputCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Ingrese Categoria del Producto"
+            android:inputType="textPersonName" />
+
+        <Spinner
+            android:id="@+id/input_card_bank2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Banco"
+            android:spinnerMode="dialog" />
+
+        <Button
+            android:id="@+id/crearPedidoButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="Enviar" />
+    </LinearLayout>
+
 </LinearLayout>

@@ -59,6 +59,11 @@
                     android:text="Cantidad Compras %TBD%"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp" />
+                <Button
+                    android:id="@+id/newOrder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Nuevo Pedido" />
 
             </LinearLayout>
 

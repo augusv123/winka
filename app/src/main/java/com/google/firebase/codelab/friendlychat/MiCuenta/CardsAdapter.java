@@ -74,7 +74,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
                 }
             });*/
 
-            itemView.setOnClickListener(new View.OnClickListener() {
+            cardSwitch.setOnClickListener(new View.OnClickListener() {
                @Override
                public void onClick(View v) {
                    listener.onItemClick(card,getAdapterPosition(),cardSwitch.isChecked());

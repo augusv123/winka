@@ -286,7 +286,7 @@ public class InicioFragment extends Fragment {
 
 
         JSONObject json = new JSONObject();
-        json.put("to","/topics/santander");
+        json.put("to","/topics/ICBC");
         JSONObject data = new JSONObject();
         data.put("message","Ahora todo cambio le toca a ella");
         data.put("title","titulo");

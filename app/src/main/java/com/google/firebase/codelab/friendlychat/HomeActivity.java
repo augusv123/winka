@@ -170,9 +170,11 @@ public class HomeActivity extends AppCompatActivity {
     private void changeFragment(Fragment fr){
         FrameLayout fl = (FrameLayout) findViewById(R.id.mainFragment);
         fl.removeAllViews();
+        fl.removeAllViewsInLayout();
         FragmentTransaction transaction1 = getSupportFragmentManager().beginTransaction();
         transaction1.add(R.id.mainFragment, fr);
         transaction1.commit();
+        this.getSupportFragmentManager().executePendingTransactions();
     }
 
 
