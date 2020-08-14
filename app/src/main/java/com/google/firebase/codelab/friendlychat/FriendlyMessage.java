@@ -32,6 +32,11 @@ public class FriendlyMessage {
         this.photoUrl = photoUrl;
         this.imageUrl = imageUrl;
     }
+    public FriendlyMessage( String name, String photoUrl) {
+
+        this.name = name;
+        this.photoUrl = photoUrl;
+    }
 
     public String getId() {
         return id;

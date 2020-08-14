@@ -18,11 +18,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -98,7 +100,7 @@ public class ChatsFragment extends Fragment {
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
     private DatabaseReference mFirebaseDatabaseReference;
-
+    private String chattodisplay;
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
             mFirebaseAdapter;
 
@@ -109,12 +111,17 @@ public class ChatsFragment extends Fragment {
         chatsViewModel =
                 ViewModelProviders.of(this).get(ChatsViewModel.class);
         View root = inflater.inflate(R.layout.chat, container, false);
+        Bundle s = this.getArguments();
+        if(s != null){
+             chattodisplay = s.getString("id");
+        }
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         // Set default username is anonymous.
         mUsername = ANONYMOUS;
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
+
         if (mFirebaseUser == null) {
             // Not signed in, launch the Sign In activity
             startActivity(new Intent(getActivity(), SignInActivity.class));
@@ -144,8 +151,10 @@ public class ChatsFragment extends Fragment {
         SnapshotParser<FriendlyMessage> parser = new SnapshotParser<FriendlyMessage>() {
             @Override
             public FriendlyMessage parseSnapshot(DataSnapshot dataSnapshot) {
+
                 FriendlyMessage friendlyMessage = dataSnapshot.getValue(FriendlyMessage.class);
-                if (friendlyMessage != null) {
+
+                if (friendlyMessage != null ) {
                     friendlyMessage.setId(dataSnapshot.getKey());
                 }
                 return friendlyMessage;
@@ -153,6 +162,13 @@ public class ChatsFragment extends Fragment {
         };
 
         DatabaseReference messagesRef = mFirebaseDatabaseReference.child(MESSAGES_CHILD);
+
+        if(chattodisplay!= null){
+
+
+
+            messagesRef = mFirebaseDatabaseReference.child("chats").child(chattodisplay).child(MESSAGES_CHILD);
+        }
         FirebaseRecyclerOptions<FriendlyMessage> options =
                 new FirebaseRecyclerOptions.Builder<FriendlyMessage>()
                         .setQuery(messagesRef, parser)
@@ -265,7 +281,8 @@ public class ChatsFragment extends Fragment {
                         mUsername,
                         mPhotoUrl,
                         null /* no image */);
-                mFirebaseDatabaseReference.child(MESSAGES_CHILD)
+                mFirebaseDatabaseReference.child("chats").child(chattodisplay).child(MESSAGES_CHILD)
+               /* mFirebaseDatabaseReference.child(MESSAGES_CHILD)*/
                         .push().setValue(friendlyMessage);
                 mMessageEditText.setText("");
             }

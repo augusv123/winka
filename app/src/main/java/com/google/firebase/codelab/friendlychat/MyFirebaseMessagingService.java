@@ -25,13 +25,24 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
         Log.d("msg", "onMessageReceived: " + remoteMessage.getData().get("message"));
         Intent intent = new Intent(this, HomeActivity.class);
+        intent.putExtra("title",remoteMessage.getData().get("title"));
+        intent.putExtra("message",remoteMessage.getData().get("message"));
+        intent.putExtra("url",remoteMessage.getData().get("url"));
+        intent.putExtra("monto",remoteMessage.getData().get("monto"));
+        intent.putExtra("descuento",remoteMessage.getData().get("descuento"));
+        intent.putExtra("producto",remoteMessage.getData().get("producto"));
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         String channelId = "Default";
         NotificationCompat.Builder builder = new  NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(remoteMessage.getData().get("title"))
-                .setContentText(remoteMessage.getData().get("message"));;
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(remoteMessage.getData().get("message")));
+
+
+                /*.setContentText(remoteMessage.getData().get("message"));;*/
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(channelId, "Default channel", NotificationManager.IMPORTANCE_DEFAULT);

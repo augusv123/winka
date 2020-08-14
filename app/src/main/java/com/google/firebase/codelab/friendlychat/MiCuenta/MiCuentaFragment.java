@@ -32,6 +32,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import com.google.firebase.codelab.friendlychat.AgregarTarjeta.AgregarTarjetaFragment;
+import com.google.firebase.codelab.friendlychat.HomeActivity;
 import com.google.firebase.codelab.friendlychat.Inicio.InicioFragment;
 import com.google.firebase.codelab.friendlychat.Inicio.MovimientosAdapter;
 import com.google.firebase.codelab.friendlychat.NuevoPedido.NuevoPedidoFragment;
@@ -79,13 +80,14 @@ public class MiCuentaFragment extends Fragment {
         accountAddCard2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentManager2 = getFragmentManager();
-                FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
+       /*         FragmentTransaction fragmentTransaction2 = getParentFragmentManager().beginTransaction();
                 AgregarTarjetaFragment fragment2 = new AgregarTarjetaFragment();
                 fragmentTransaction2.addToBackStack("xyz");
                 fragmentTransaction2.hide(MiCuentaFragment.this);
-                fragmentTransaction2.add(android.R.id.content, fragment2);
-                fragmentTransaction2.commit();
+                fragmentTransaction2.replace(android.R.id.content, fragment2);
+                fragmentTransaction2.commit();*/
+                ((HomeActivity)getActivity()).changeFragment(new AgregarTarjetaFragment());
+
                 //
 
             }
@@ -94,13 +96,15 @@ public class MiCuentaFragment extends Fragment {
         newOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentManager2 = getFragmentManager();
-                FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
+
+                ((HomeActivity)getActivity()).changeFragment(new NuevoPedidoFragment());
+
+   /*             FragmentTransaction fragmentTransaction2 = getParentFragmentManager().beginTransaction();
                 NuevoPedidoFragment fragment2 = new NuevoPedidoFragment();
                 fragmentTransaction2.addToBackStack("xyz");
                 fragmentTransaction2.hide(MiCuentaFragment.this);
                 fragmentTransaction2.add(android.R.id.content, fragment2);
-                fragmentTransaction2.commit();
+                fragmentTransaction2.commit();*/
                 //
 
             }

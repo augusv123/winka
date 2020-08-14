@@ -1,27 +1,21 @@
 package com.google.firebase.codelab.friendlychat.Inicio;
 
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
 import android.os.StrictMode;
 import android.util.Log;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,7 +24,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.codelab.friendlychat.R;
@@ -41,11 +34,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.RemoteMessage;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -66,9 +57,9 @@ public class InicioFragment extends Fragment {
     private int balance;
     private FirebaseAuth mFirebaseAuth  = FirebaseAuth.getInstance();
     private FirebaseUser mFirebaseUser= mFirebaseAuth.getCurrentUser();
-    DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
-    DatabaseReference mConditionBallance = mRootRef.child(mFirebaseAuth.getUid()).child("Ballance");
-    DatabaseReference getmConditionMovements = mRootRef.child(mFirebaseAuth.getUid()).child("movements");
+    DatabaseReference mRootRef ;
+    DatabaseReference mConditionBallance ;
+    DatabaseReference getmConditionMovements;
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -79,6 +70,22 @@ public class InicioFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
+        mRootRef = FirebaseDatabase.getInstance().getReference();
+        try{
+            mConditionBallance = mRootRef.child(mFirebaseAuth.getUid()).child("Ballance");
+
+        }
+        catch (NullPointerException e){
+            System.out.println("excepcion");
+        }
+        try{
+            getmConditionMovements = mRootRef.child(mFirebaseAuth.getUid()).child("movements");
+
+        }
+        catch (NullPointerException e){
+            System.out.println("excepcion 2");
+        }
         inicioViewModel =
                 ViewModelProviders.of(this).get(InicioViewModel.class);
         View root = inflater.inflate(R.layout.inicio, container, false);
@@ -135,6 +142,8 @@ public class InicioFragment extends Fragment {
         balanceText.setText("Dinero en cuenta: $" + balance);
 
         //logica para mostrar la lista de movimientos
+        try {
+
             movements = getMovements();
             mRecyclerView = (RecyclerView) root.findViewById(R.id.movementsRecyclerView);
             mlayaoutManager = new LinearLayoutManager(getContext());
@@ -142,7 +151,16 @@ public class InicioFragment extends Fragment {
             mAdapter = new MovimientosAdapter(movements,R.layout.recycler_view_item);
             mRecyclerView.setLayoutManager(mlayaoutManager);
             mRecyclerView.setAdapter(mAdapter);
-            subscribeMethod();
+            /*subscribeMethod();*/
+        }
+        catch (NullPointerException e){
+            System.out.println(e);
+        }
+
+
+
+
+
         return root;
     }
     private List<String> getAllMovements(){
@@ -362,5 +380,35 @@ public class InicioFragment extends Fragment {
        /* String response = FirebaseMessaging.getInstance().send(message);*/
 // Response is a message ID string.
      /*   System.out.println("Successfully sent message: " + response);*/
+    }
+    private void aceptarCompra(String message,String title){
+
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.aceptar_compra_dialog, null);
+        TextView purchaseTitle = (TextView) dialogView.findViewById(R.id.purchaseTitle);
+        purchaseTitle.setText(title);
+        TextView purchaseMessage = (TextView) dialogView.findViewById(R.id.purchaseMessage);
+        purchaseMessage.setText(message);
+        /* inflater.inflate(R.layout.ingresar_dinero_dialog, null)*/
+        new MaterialAlertDialogBuilder(getContext())
+                .setTitle("Ingresar dinero")
+                .setMessage("seguro que quiere ingresar dinero?")
+                .setView(dialogView)
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        Toast.makeText(getContext(), "Compra Aceptada!", Toast.LENGTH_SHORT).show();
+/*                        int amount = Integer.parseInt(amountInput.getText().toString());*/
+                        /*          String amount = amountInput.getText().toString();*/
+
+                    }
+                })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        /*InicioFragment.this.getDialog().cancel();*/
+                    }
+                })
+
+                .show();
     }
     }

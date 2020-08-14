@@ -28,6 +28,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.codelab.friendlychat.Calendario.CalendarioFragment;
 import com.google.firebase.codelab.friendlychat.Chats.ChatsFragment;
+import com.google.firebase.codelab.friendlychat.Chats.UsersChatsFragment;
 import com.google.firebase.codelab.friendlychat.Inicio.InicioFragment;
 import com.google.firebase.codelab.friendlychat.Mas.MasFragment;
 import com.google.firebase.codelab.friendlychat.MiCuenta.MiCuentaFragment;
@@ -51,17 +52,57 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
-        InicioFragment inicioFragment = new InicioFragment();
-        changeFragment(inicioFragment);
+
+        //chequeo si hay extras
+
+        String title;
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                title= null;
+            } else {
+                title= extras.getString("title");
+                Toast.makeText(this, title, Toast.LENGTH_LONG).show();
+            }
+        } else {
+            title= (String) savedInstanceState.getSerializable("title");
+        }
+
+
+
+
         //singout
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        System.out.println(mFirebaseUser);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         mSignInClient = GoogleSignIn.getClient(this, gso);
+        if(mFirebaseUser!= null){
+            InicioFragment inicioFragment = new InicioFragment();
+            if(title!=null){
+                Toast.makeText(this, "por cambiar", Toast.LENGTH_SHORT).show();
+                UsersChatsFragment fragment = new UsersChatsFragment();
+                Bundle extras = getIntent().getExtras();
+               /* args.putString("title",title);
+                args.putString("message",title);*/
+                fragment.setArguments(extras);
+                changeFragment(fragment);
 
+            }
+            else{
+                changeFragment(inicioFragment);
+
+            }
+        }
+        else{
+            mUsername = ANONYMOUS;
+            startActivity(new Intent(this, SignInActivity.class));
+            finish();
+
+        }
 
 /*        FirebaseMessaging.getInstance().send(new RemoteMessage.Builder("string")
                 .setMessageId("winka-1bb85")
@@ -123,9 +164,9 @@ public class HomeActivity extends AppCompatActivity {
                         changeFragment(nuevoPedidoFragment);
                         break;
                     case R.id.page_5:
-                        MasFragment masFragment = new MasFragment();
+                        UsersChatsFragment usersChatsFragment = new UsersChatsFragment();
                         item.setChecked(true);
-                        changeFragment(masFragment);
+                        changeFragment(usersChatsFragment);
                         break;
                     default:
                         break;
@@ -161,21 +202,33 @@ public class HomeActivity extends AppCompatActivity {
 
                 mUsername = ANONYMOUS;
                 startActivity(new Intent(this, SignInActivity.class));
+                startActivity(new Intent(this, SignInActivity.class));
                 finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
-    private void changeFragment(Fragment fr){
+    public void changeFragment(Fragment fr){
         FrameLayout fl = (FrameLayout) findViewById(R.id.mainFragment);
         fl.removeAllViews();
         fl.removeAllViewsInLayout();
         FragmentTransaction transaction1 = getSupportFragmentManager().beginTransaction();
-        transaction1.add(R.id.mainFragment, fr);
+
+        transaction1.replace(R.id.mainFragment, fr);
         transaction1.commit();
         this.getSupportFragmentManager().executePendingTransactions();
     }
 
 
+    public void changeFragmentwithextra(Fragment fr,Object o) {
+        FrameLayout fl = (FrameLayout) findViewById(R.id.mainFragment);
+        fl.removeAllViews();
+        fl.removeAllViewsInLayout();
+        FragmentTransaction transaction1 = getSupportFragmentManager().beginTransaction();
+
+        transaction1.replace(R.id.mainFragment, fr);
+        transaction1.commit();
+        this.getSupportFragmentManager().executePendingTransactions();
+    }
 }

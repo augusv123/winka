@@ -21,7 +21,9 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.codelab.friendlychat.HomeActivity;
 import com.google.firebase.codelab.friendlychat.Inicio.InicioViewModel;
+import com.google.firebase.codelab.friendlychat.MainActivity;
 import com.google.firebase.codelab.friendlychat.MiCuenta.MiCuentaFragment;
 import com.google.firebase.codelab.friendlychat.R;
 import com.google.firebase.database.DatabaseReference;
@@ -39,6 +41,7 @@ public class AgregarTarjetaFragment extends Fragment {
     private FirebaseUser mFirebaseUser= mFirebaseAuth.getCurrentUser();
     DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
     DatabaseReference getTarjetasCondition = mRootRef.child(mFirebaseAuth.getUid()).child("Tarjetas");
+    private Button addCard;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         calendarioViewModel =
@@ -49,33 +52,31 @@ public class AgregarTarjetaFragment extends Fragment {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentManager2 = getFragmentManager();
-                FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
-                MiCuentaFragment fragment2 = new MiCuentaFragment();
-                fragmentTransaction2.addToBackStack("xyz");
-                fragmentTransaction2.hide(AgregarTarjetaFragment.this);
-                fragmentTransaction2.add(android.R.id.content, fragment2);
-                fragmentTransaction2.commit();
+                ((HomeActivity)getActivity()).changeFragment(new MiCuentaFragment());
+
             }
         });
 
+
+
+
         //spinner
-        Spinner spin = (Spinner) root.findViewById(R.id.input_card_bank);
+        final Spinner spin = (Spinner) root.findViewById(R.id.input_card_bank);
         /*spin.setOnItemSelectedListener(this);*/
         //Creating the ArrayAdapter instance having the country list
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, tarjetas);
         spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String s  = parent.getItemAtPosition(position).toString();
+          /*      String s  = parent.getItemAtPosition(position).toString();
                 try {
                     addTarjeta(s);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
                     e.printStackTrace();
-                }
-                Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+                }*/
+                /*Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();*/
             }
 
             @Override
@@ -85,6 +86,25 @@ public class AgregarTarjetaFragment extends Fragment {
         });
         //Setting the ArrayAdapter data on the Spinner
         spin.setAdapter(adapter);
+
+
+        //agregar tarjeta listner
+        addCard = (Button) root.findViewById(R.id.accountAddCard);
+        addCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String s  = spin.getSelectedItem().toString();
+                try {
+                    addTarjeta(s);
+                    Toast.makeText(getContext(), "Se agrego con exito la tarjeta " + s, Toast.LENGTH_SHORT).show();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         return root;
     }
     private void addTarjeta(  String nombreTarjeta) throws IOException, JSONException {
