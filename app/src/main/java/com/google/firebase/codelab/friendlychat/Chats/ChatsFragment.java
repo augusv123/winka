@@ -71,6 +71,8 @@ public class ChatsFragment extends Fragment {
             messageImageView = (ImageView) itemView.findViewById(R.id.messageImageView);
             messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
             messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
+
+
         }
     }
     // Firebase instance variables
@@ -103,6 +105,8 @@ public class ChatsFragment extends Fragment {
     private String chattodisplay;
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
             mFirebaseAdapter;
+
+    private Button finalizarCompraButton;
 
     private ChatsViewModel chatsViewModel;
 
@@ -189,6 +193,7 @@ public class ChatsFragment extends Fragment {
                     viewHolder.messageTextView.setText(friendlyMessage.getText());
                     viewHolder.messageTextView.setVisibility(TextView.VISIBLE);
                     viewHolder.messageImageView.setVisibility(ImageView.GONE);
+
                 } else if (friendlyMessage.getImageUrl() != null) {
                     String imageUrl = friendlyMessage.getImageUrl();
                     if (imageUrl.startsWith("gs://")) {
@@ -299,7 +304,16 @@ public class ChatsFragment extends Fragment {
             }
         });
 
+        //finalizar compra boton con logica
 
+        finalizarCompraButton = (Button) root.findViewById(R.id.finalizarCompraButton);
+        finalizarCompraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFirebaseDatabaseReference.child("chats").child(chattodisplay).setValue(null);
+
+            }
+        });
 
         return root;
     }

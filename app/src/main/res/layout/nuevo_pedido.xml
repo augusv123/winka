@@ -55,13 +55,25 @@
             android:hint="Ingrese Nombre"
             android:inputType="textPersonName" />
 
-        <EditText
+
+        <Spinner
             android:id="@+id/inputCategory"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Ingrese Categoria del Producto"
-            android:inputType="textPersonName" />
+            android:hint="Categoria"
+            android:spinnerMode="dialog" />
+        <Spinner
+            android:id="@+id/inputtipoderopa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Categoria"
+            android:spinnerMode="dialog" />
+        <Spinner
+            android:id="@+id/inputGenero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Categoria"
+            android:spinnerMode="dialog" />
 
         <Spinner
             android:id="@+id/input_card_bank2"

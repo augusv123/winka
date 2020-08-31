@@ -22,6 +22,7 @@
     <string name="profit" translatable="false">$0</string>
     <string name="mail" translatable="false">No identificado</string>
     <string name="fecha_vencimiento" translatable="false">Fecha de Vencimiento</string>
+    <string name="confirmarrecibodecompra" translatable="false">Recibi mi compra</string>
     <string-array name="bancos">
         <item>BBVA</item>
         <item>Galicia</item>

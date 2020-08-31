@@ -31,6 +31,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         intent.putExtra("monto",remoteMessage.getData().get("monto"));
         intent.putExtra("descuento",remoteMessage.getData().get("descuento"));
         intent.putExtra("producto",remoteMessage.getData().get("producto"));
+        intent.putExtra("key",remoteMessage.getData().get("key"));
+        intent.putExtra("uid",remoteMessage.getData().get("uid"));
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         String channelId = "Default";
@@ -38,6 +40,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(remoteMessage.getData().get("title"))
                 .setAutoCancel(true)
+
                 .setContentIntent(pendingIntent)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(remoteMessage.getData().get("message")));
 

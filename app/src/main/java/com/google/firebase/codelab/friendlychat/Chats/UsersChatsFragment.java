@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.codelab.friendlychat.Chats.UsersChatsViewModel;
 import com.google.firebase.codelab.friendlychat.FriendlyMessage;
+import com.google.firebase.codelab.friendlychat.NuevoPedido.Pedido;
 import com.google.firebase.codelab.friendlychat.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -41,6 +42,9 @@ public class UsersChatsFragment extends Fragment {
     private FirebaseUser mFirebaseUser= mFirebaseAuth.getCurrentUser();
     DatabaseReference mRootRef ;
     DatabaseReference mconditionChats ;
+    private DatabaseReference mconditionPedidos;
+    private Pedido pedido;
+    private boolean isconfirmed;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -70,14 +74,52 @@ public class UsersChatsFragment extends Fragment {
             String monto = s.getString("monto");
             String producto = s.getString("producto");
             String descuento = s.getString("descuento");
-            aceptarCompra(message,title,url,monto,producto,descuento);
+            String key = s.getString("key");
+            String uid = s.getString("uid");
+            if(!checkCompra(key)){
+
+                aceptarCompra(message,title,url,monto,producto,descuento,uid,key);
+
+            }
+            else{
+                Toast.makeText(getContext(), "El pedido de compra ya fue aceptado por otro usuario", Toast.LENGTH_SHORT).show();
+            }
         }
 
 
         return root;
     }
-    private void aceptarCompra(final String message, final String title, final String url, final String monto, final String producto, final String descuento){
 
+    private boolean checkCompra(final String key) {
+
+       if(key!= null) mconditionPedidos = mRootRef.child("pedidos").child(key);
+        else return false;
+        mconditionPedidos.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                 pedido = dataSnapshot.getValue(Pedido.class);
+                 Pedido aux = pedido;
+                 aux.setIsconfirmed(true);
+
+                mRootRef.child("pedidos").child(key).setValue(aux);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+
+        });
+       if(pedido == null) return false;
+
+       return pedido.isIsconfirmed();
+/*        return false;*/
+    }
+
+    private void aceptarCompra(final String message, final String title, final String url, final String monto, final String producto, final String descuento,final String uid,final String key){
+        Toast.makeText(getContext(), key, Toast.LENGTH_SHORT).show();
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.aceptar_compra_dialog, null);
         TextView purchaseTitle = (TextView) dialogView.findViewById(R.id.purchaseTitle);
@@ -97,14 +139,15 @@ public class UsersChatsFragment extends Fragment {
                         /*          String amount = amountInput.getText().toString();*/
                         FriendlyMessage u = new FriendlyMessage(title,message);
                         u.setPhotoUrl("default");
-                        mconditionChats.child(mFirebaseUser.getUid()).setValue(u);
+                        mconditionChats.child(mFirebaseUser.getUid()+"-"+uid).setValue(u);
 
                         String message = "Pedido de compra de " + producto + "por el monto de:" + monto + ". Puede visualizar y comprar el producto en al URL: " + url;
                         FriendlyMessage fm = new FriendlyMessage();
                         fm.setText(message);
                         fm.setImageUrl("default");
 
-                        mconditionChats.child(mFirebaseUser.getUid()).child("messages").push().setValue(fm);
+                        mconditionChats.child(mFirebaseUser.getUid()+"-"+uid).child("messages").push().setValue(fm);
+                        mconditionChats.child(mFirebaseUser.getUid()+"-"+uid).child("key").push().setValue(key);
 
 
                     }

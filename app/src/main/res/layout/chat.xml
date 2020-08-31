@@ -12,6 +12,13 @@
     android:paddingTop="@dimen/activity_top_margin"
     tools:context="com.google.firebase.codelab.friendlychat.MainActivity">
 
+    <Button
+        android:id="@+id/finalizarCompraButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/confirmarrecibodecompra" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messageRecyclerView"
         android:layout_width="match_parent"
